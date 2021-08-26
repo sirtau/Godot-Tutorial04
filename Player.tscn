@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Models/Weapon/shotgun.obj" type="ArrayMesh" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
+[ext_resource path="res://Bullet.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.5
@@ -9,6 +10,8 @@ height = 1.2
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 2 )
+ammo = 50
+BulletScene = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.09164, 0 )
@@ -55,4 +58,4 @@ material/31 = null
 material/32 = null
 
 [node name="Muzzle" type="Spatial" parent="Camera"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0923007, -0.174816, -0.826543 )
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.0923007, -0.174816, -0.826543 )

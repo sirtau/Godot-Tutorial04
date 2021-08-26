@@ -1,9 +1,9 @@
 extends KinematicBody
 
 export var curHp := 10
-export var maxHP:= 10
-export var ammo:= 15
-export var score:= 15
+export var maxHp:= 10
+export var ammo:= 10
+export var score:= 0
 export var gold:= 0
 
 export var moveSpeed := 5.0
@@ -19,6 +19,15 @@ var mouseDelta:= Vector2()
 
 onready var camera := $Camera
 onready var muzzle := $Camera/Muzzle
+export var BulletScene : PackedScene 
+onready var ui : Node = get_node("/root/MainScene/CanvasLayer/UI")
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	ui.update_health_bar(curHp, maxHp)
+	ui.update_score_text(score)
+	ui.update_ammo_text(ammo)
 
 func _physics_process(delta):
 	vel.x = 0
@@ -49,3 +58,51 @@ func _physics_process(delta):
 
 	if Input.is_action_pressed("jump") and is_on_floor():
 		vel.y = jumpForce
+
+func _process(delta):
+	camera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
+	camera.rotation_degrees.x = clamp(camera.rotation_degrees.x, minLookAngle, maxLookAngle)
+	
+	rotation_degrees.y -= mouseDelta.x * lookSensitivity * delta
+	
+	mouseDelta = Vector2()
+	if Input.is_action_just_pressed("attack") and ammo > 0:
+		shoot()
+
+func _input(event):
+	if event is InputEventMouseMotion:
+		mouseDelta = event.relative
+
+func take_damage(damage):
+	curHp -= damage
+	ui.update_health_bar(curHp, maxHp)
+	if curHp < 0:	
+		die()
+
+func die():
+	print('you dead~')
+	
+func add_score (amount):
+	score+= amount
+	ui.update_score_text(score)
+	
+func shoot ():
+	var bullet = BulletScene.instance()
+	get_node("/root/MainScene").add_child(bullet)
+	ui.update_ammo_text(ammo)
+	bullet.global_transform = muzzle.global_transform
+	
+	ammo -= 1
+
+func add_health (amount):
+	
+	curHp += amount
+	
+	if curHp > maxHp:
+		curHp = maxHp
+	ui.update_health_bar(curHp, maxHp)
+
+func add_ammo (amount):
+	
+	ammo += amount
+	ui.update_ammo_text(ammo)
